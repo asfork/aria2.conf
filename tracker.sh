@@ -60,7 +60,12 @@ ADD_TRACKERS() {
     if [ ! -f ${ARIA2_CONF} ]; then
         echo -e "$(DATE_TIME) ${ERROR} '${ARIA2_CONF}' does not exist."
         exit 1
-    else
+    elif [[ "$(uname)" == "Darwin" ]]; then
+        echo "macos system"
+        [ -z $(grep "bt-tracker=" ${ARIA2_CONF}) ] && echo "bt-tracker=" >>${ARIA2_CONF}
+        sed -i "" "s@^\(bt-tracker=\).*@\1${TRACKER}@" ${ARIA2_CONF} && echo -e "$(DATE_TIME) ${INFO} BT trackers successfully added to Aria2 configuration file !"
+    elif [[ "$(expr substr $(uname -s) 1 5)"=="Linux" ]]; then
+        echo "linux system"
         [ -z $(grep "bt-tracker=" ${ARIA2_CONF}) ] && echo "bt-tracker=" >>${ARIA2_CONF}
         sed -i "s@^\(bt-tracker=\).*@\1${TRACKER}@" ${ARIA2_CONF} && echo -e "$(DATE_TIME) ${INFO} BT trackers successfully added to Aria2 configuration file !"
     fi
